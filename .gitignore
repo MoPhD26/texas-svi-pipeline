@@ -1,0 +1,20 @@
+# Data and outputs (regenerate by running the pipeline)
+output/
+data/
+*.gpkg
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.zip
+
+# Secrets
+.env
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
