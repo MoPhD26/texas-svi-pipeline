@@ -86,7 +86,8 @@ flowchart TD
     C --> D["04 Harmonize 2009 and 2024 to 2010 tracts"]
     D --> F["05 Stack into a 3,228 row panel"]
     F --> G["06 Build the SVI"]
-    G --> T["07 to 09 LISA trajectories and quintile transitions"]
+    G --> L["LISA clusters in ArcGIS Pro"]
+    L --> T["07 to 09 Trajectory typology and quintile transitions"]
     T --> H["10 Hazard congruence with FEMA NRI"]
     H --> V["11 Verify every reported number"]
 ```
@@ -99,7 +100,10 @@ flowchart TD
 | 04 | [`04_crosswalk_to_2010.py`](src/04_crosswalk_to_2010.py) to [`04d`](src/04d_crosswalk_cleanup.py) | Harmonizes 2009 and 2024 to 2010 tracts, checks variable definitions across vintages, and validates all 807 tracts |
 | 05 | [`05_stack_longitudinal.py`](src/05_stack_longitudinal.py) | Stacks the four periods into one analysis-ready panel |
 | 06 | [`06_build_svi_index.py`](src/06_build_svi_index.py) | Computes the indicators, pooled z-scores, composite and theme scores, uncertainty flags, and labeled GeoPackages |
-| 07 to 09 | *being added* | LISA clusters, trajectory typology, and quintile transition matrices |
+| LISA | ArcGIS Pro | Cluster and Outlier Analysis (Anselin Local Moran's I) on each period's SVI, first-order Queen contiguity, 999 permutations, FDR correction |
+| 07 | [`07_verify_lisa_exports.py`](src/07_verify_lisa_exports.py) | Checks the four LISA exports and their cluster type counts |
+| 08 | [`08_build_trajectory_typology.py`](src/08_build_trajectory_typology.py) | Turns each tract's four-period cluster sequence into one of 10 trajectory classes |
+| 09 | [`09_build_transition_matrix.py`](src/09_build_transition_matrix.py) | Assigns pooled quintiles and builds transition matrices for the corridor and each metro area |
 | 10 | [`10_hazard_congruence.py`](src/10_hazard_congruence.py) | Brings FEMA Expected Annual Loss onto 2010 tracts and runs the RQ3 statistical tests |
 | 11 | [`11_verify_section_6_3.py`](src/11_verify_section_6_3.py) | Reproduces the hot spot counts and RQ3 results in Python from the source data |
 
@@ -124,6 +128,12 @@ python src/04d_crosswalk_cleanup.py
 python src/05_stack_longitudinal.py
 python src/06_build_svi_index.py
 
+# LISA: in ArcGIS Pro, run Cluster and Outlier Analysis on SVI_SCORE in each
+# output/spatial/svi_{YEAR}_labeled.gpkg and export to output/LISA_results_{YEAR}.csv
+python src/07_verify_lisa_exports.py
+python src/08_build_trajectory_typology.py
+python src/09_build_transition_matrix.py
+
 # Steps 10 and 11 need the FEMA NRI tract CSV in data/nri/
 # and the 2020-to-2010 tract relationship file in data/crosswalk/
 python src/10_hazard_congruence.py
@@ -134,7 +144,7 @@ On Windows PowerShell, set variables with `$env:CENSUS_API_KEY="your_key_here"` 
 
 ## Tests
 
-33 automated tests check the core methods on small synthetic examples, with no data download needed: suppression code cleaning, inflation factors, crosswalk totals and margins of error, the stacked panel, the FEMA loss crosswalk, Dunn's test corrections, and the Gi* significance bins. GitHub Actions runs them on every push.
+61 automated tests check the core methods on small synthetic examples, with no data download needed: suppression code cleaning, inflation factors, crosswalk totals and margins of error, the stacked panel, every trajectory rule (including the examples in the dissertation), quintile transitions, the FEMA loss crosswalk, Dunn's test corrections, and the Gi* significance bins. GitHub Actions runs them on every push.
 
 ```bash
 pip install -r requirements.txt -r requirements-dev.txt

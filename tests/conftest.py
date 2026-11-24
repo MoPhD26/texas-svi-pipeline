@@ -48,3 +48,18 @@ def hazard():
 @pytest.fixture(scope="session")
 def verify():
     return load_step("11_verify_section_6_3.py")
+
+
+@pytest.fixture(scope="session")
+def lisa_check():
+    return load_step("07_verify_lisa_exports.py")
+
+
+@pytest.fixture(scope="session")
+def trajectory():
+    return load_step("08_build_trajectory_typology.py")
+
+
+@pytest.fixture(scope="session")
+def transition():
+    return load_step("09_build_transition_matrix.py")
