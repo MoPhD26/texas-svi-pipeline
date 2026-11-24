@@ -206,8 +206,8 @@ THEME_MAP = {
 }
 
 print(f"\n  Total indicators: {len(INDICATORS)}")
-print(f"  Unemployment excluded — availability/comparability limitation in 2009")
-print(f"\n  Null counts per indicator:")
+print("  Unemployment excluded — availability/comparability limitation in 2009")
+print("\n  Null counts per indicator:")
 for ind in INDICATORS:
     n = pd.to_numeric(df[ind], errors='coerce').isna().sum()
     print(f"    {ind:<35} nulls={n}")
@@ -243,12 +243,12 @@ df["high_uncertainty_flag"] = high_cv.astype(int)   # integer 0/1
 
 pct_flag = round(high_cv.sum() / len(df) * 100, 1)
 print(f"  CV threshold:           {CV_THRESHOLD}% (operational rule — not a universal Census standard)")
-print(f"  Flag based on:          poverty count, total population, limited English")
+print("  Flag based on:          poverty count, total population, limited English")
 print(f"  High-uncertainty rows:  {high_cv.sum()} of {len(df)} ({pct_flag}%)")
 by_year = df.groupby("YEAR5")["high_uncertainty_flag"].sum()
 for yr, cnt in by_year.items():
     print(f"    {yr}: {cnt} tracts flagged ({cnt/807*100:.1f}%)")
-print(f"  Note: Flag covers selected key indicators only, not all 12 composite indicators")
+print("  Note: Flag covers selected key indicators only, not all 12 composite indicators")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # STEP 3 — POOLED Z-SCORE STANDARDIZATION
@@ -299,7 +299,7 @@ df["SVI_composite"] = df[Z_COLS].apply(
 )
 
 n_scored = df["SVI_composite"].notna().sum()
-print(f"\n  Overall composite (SVI_composite):")
+print("\n  Overall composite (SVI_composite):")
 print(f"    Min indicators required: {COMPOSITE_MIN_INDICATORS} of 12")
 print(f"    Non-null:  {n_scored} / {len(df)}")
 print(f"    Null:      {len(df)-n_scored} (zero-pop and institutional tracts)")
@@ -321,7 +321,7 @@ for theme, (inds, min_req) in THEME_MAP.items():
     print(f"    Valid rows: {n_valid} | Mean: {df[col_name].mean():.4f}")
 
 # CDC-style within-year percentile ranking (secondary, cross-sectional only)
-print(f"\n  CDC-style percentile ranks (within-year, cross-sectional only):")
+print("\n  CDC-style percentile ranks (within-year, cross-sectional only):")
 for yr in sorted(df['YEAR5'].unique()):
     mask = df['YEAR5'] == yr
     df.loc[mask, "SVI_percentile_withinyear"] = (
@@ -366,13 +366,13 @@ spearman = valid[base_col].rank().corr(valid[alt_col].rank())
 print(f"\n  Vintages tested:              2014, 2019, 2024 ({len(df_sens)} tract-years)")
 print(f"  Base composite:               {len(INDICATORS)} indicators (>=10 of 12 required)")
 print(f"  Alt composite with unemp:     {len(INDICATORS)+1} indicators (>=11 of 13 required)")
-print(f"  Note: base z-scores pooled 2009–2024; unemployment pooled within 2014–2024")
-print(f"  This is a subset-period diagnostic, not a parallel index construction")
+print("  Note: base z-scores pooled 2009–2024; unemployment pooled within 2014–2024")
+print("  This is a subset-period diagnostic, not a parallel index construction")
 print(f"\n  Pearson correlation:          {pearson:.4f}")
 print(f"  Spearman rank correlation:    {spearman:.4f}")
 print(f"  Interpretation:               {'Very high — exclusion does not materially alter rankings' if pearson > 0.95 else '⚠ lower than expected'}")
 
-print(f"\n  Correlation by vintage:")
+print("\n  Correlation by vintage:")
 for yr in [2014, 2019, 2024]:
     sub  = df_sens[df_sens["YEAR5"]==yr][[base_col, alt_col]].dropna()
     r_yr = sub[base_col].corr(sub[alt_col])
@@ -394,7 +394,7 @@ print("\n" + "=" * 65)
 print("STEP 6 — Validation")
 print("=" * 65)
 
-print(f"\n  SVI_composite by vintage:")
+print("\n  SVI_composite by vintage:")
 print(f"  {'Year':<8} {'Mean':>8} {'SD':>8} {'Min':>8} {'Max':>8} {'Nulls':>7}")
 print(f"  {'-'*52}")
 for yr in [2009, 2014, 2019, 2024]:
@@ -413,7 +413,7 @@ print(f"  Tracts with 0 indicators (null):  {all_null} (zero-pop group quarters)
 print(f"  Tracts with partial (<{COMPOSITE_MIN_INDICATORS}) indicators: {partial} → assigned null composite")
 print(f"  Tracts with full {len(INDICATORS)} indicators:   {(z_counts==12).sum()}")
 
-print(f"\n  High-uncertainty by vintage:")
+print("\n  High-uncertainty by vintage:")
 for yr in [2009, 2014, 2019, 2024]:
     n = df[df["YEAR5"]==yr]["high_uncertainty_flag"].sum()
     print(f"    {yr}: {n} of 807 ({n/807*100:.1f}%) flagged")
@@ -465,7 +465,7 @@ try:
     geoid_col = next((c for c in gdf_base.columns if c in ("GEOID10","GEOID")), None)
     gdf_geo   = gdf_base[[geoid_col,"geometry"]].rename(columns={geoid_col:"GEOID10"})
     print(f"\n  Boundary geometry loaded: {len(gdf_geo)} polygons, CRS={gdf_geo.crs}")
-    print(f"  Note: all vintages displayed on common 2010 geometry")
+    print("  Note: all vintages displayed on common 2010 geometry")
 
     def build_labeled(svi_df):
         out = pd.DataFrame()
@@ -507,7 +507,7 @@ try:
     labeled = build_labeled(out_df)
 
     # Per-vintage files
-    print(f"\n  Per-vintage spatial files:")
+    print("\n  Per-vintage spatial files:")
     for year in [2009, 2014, 2019, 2024]:
         yr_data  = labeled[labeled["YEAR"] == year].copy()
         gdf_yr   = gdf_geo.merge(yr_data, on="GEOID10", how="left")
@@ -531,9 +531,9 @@ try:
 
     out_time = SPATIAL_DIR / "svi_all_years_labeled_time_enabled.gpkg"
     gdf_all.to_file(out_time, driver="GPKG")
-    print(f"\n  Time-enabled combined file:")
+    print("\n  Time-enabled combined file:")
     print(f"    {len(gdf_all)} features (807 × 4 years)")
-    print(f"    DATE values: 2009-01-01 → 2024-01-01")
+    print("    DATE values: 2009-01-01 → 2024-01-01")
     print(f"    ✓ → {out_time}")
 
     # Field reference
